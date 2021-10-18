@@ -94,15 +94,17 @@ USER petalinux
 # 	&& echo "source /opt/Xilinx/SDK/${XILVER}/settings64.sh" >> ~/.bashrc \
 # 	&& echo "source /opt/${PETALINUX_BASE}/settings.sh" >> ~/.bashrc
 
-COPY ${PETALINUX_INSTALLER} .
+COPY --chown=petalinux:petalinux ${PETALINUX_INSTALLER} .
 
 # Install PetaLinux
 RUN chown -R petalinux:petalinux . \
 	&& chmod a+x ${PETALINUX_INSTALLER} \
-	&& SKIP_LICENSE=y ./${PETALINUX_FILE}${PETALINUX_INSTALLER} /opt/${PETALINUX_BASE} \
+	&& SKIP_LICENSE=y ./${PETALINUX_FILE}${PETALINUX_INSTALLER} -d /opt/${PETALINUX_BASE} \
 	&& rm -f ./${PETALINUX_INSTALLER} \
 	&& rm -f petalinux_installation_log
 
 # Source settings at login
 USER root
 RUN echo "source /opt/${PETALINUX_BASE}/settings.sh" >> /etc/profile
+
+COPY --chown=petalinux:petalinux xilinx* /opt/
